@@ -6,7 +6,7 @@ mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
 
 # For static images:
-IMAGE_FILES = ['/res/ok3.jpg']
+IMAGE_FILES = ['/res/ok1.jpg']
 basePath = os.getcwd()
 with mp_hands.Hands(
     static_image_mode=True,
@@ -29,25 +29,35 @@ with mp_hands.Hands(
     print('image width: ', image_width)
     print('image height: ', image_height)
     annotated_image = image.copy()
+
+    print("=======Hand landmarks========")
     for hand_landmarks in results.multi_hand_landmarks:
-      # print('hand_landmarks: \n', hand_landmarks)
-      for idx, landmark in enumerate(hand_landmarks.landmark):
-        print(idx,'   x: ',landmark.x,'y: ', landmark.y, 'z: ', landmark.z)
-      print(
-          f'Index finger tip coordinates: (',
-          f'{hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].x * image_width}, '
-          f'{hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].y * image_height})'
-      )
+      # print hand landmarks
+      for id, landmark in enumerate(hand_landmarks.landmark):
+        print(id,': ',landmark.x,'; ', landmark.y, '; ', landmark.z)
+
       mp_drawing.draw_landmarks(
           annotated_image,
           hand_landmarks,
           mp_hands.HAND_CONNECTIONS,
           mp_drawing_styles.get_default_hand_landmarks_style(),
           mp_drawing_styles.get_default_hand_connections_style())
-    cv2.imwrite(basePath+ '/res/annotated_image' + str(idx) + '.png', cv2.flip(annotated_image, 1))
-    # Draw hand world landmarks.
+
+    cv2.imwrite(basePath+ '/res/annotated_' + file[file.rfind('/')+1:file.rfind('.')] + '.png', cv2.flip(annotated_image, 1))
+
+    # # Draw hand landmarks 
+    # for hand_landmarks in results.multi_hand_world_landmarks: 
+      # mp_drawing.plot_landmarks(
+      #   hand_landmarks, mp_hands.HAND_CONNECTIONS, azimuth=5)
+
     if not results.multi_hand_world_landmarks:
       continue
+
+    print("=======Hand world landmarks========")
     for hand_world_landmarks in results.multi_hand_world_landmarks:
+      # Print hand world landmarks
+      for id, landmark in enumerate(hand_world_landmarks.landmark):
+        print(id,': ',landmark.x,'; ', landmark.y, '; ', landmark.z)
+      # Draw hand world landmarks.
       mp_drawing.plot_landmarks(
         hand_world_landmarks, mp_hands.HAND_CONNECTIONS, azimuth=5)
